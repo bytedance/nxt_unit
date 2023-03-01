@@ -1,0 +1,11 @@
+{{define "header"}}
+{{range .Comments}}{{.}}
+{{end -}}
+package {{.Package}}
+
+import (
+{{range .Imports}}{{.Name}} {{.Path}}
+{{end}}
+)
+
+{{end}}

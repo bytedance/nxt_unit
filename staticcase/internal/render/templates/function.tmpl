@@ -1,0 +1,134 @@
+{{define "function"}}
+{{- $f := .}}
+wg{{$.Uid}}.Add(1)
+go func(t *testing.T)  {
+	{{- with .Receiver}}
+		{{- if .IsStruct}}
+			{{- if .Fields}}
+				type Fields struct {
+				{{- range .Fields}}
+					{{- if lt .Index .FieldMaxIndex}}
+					    {{Field .}} {{.Type}}
+					{{- end}}
+				{{- end}}
+				}
+			{{- end}}
+		{{- end}}
+	{{- end}}
+	{{- if .TestParameters}}
+	type Args struct {
+		{{- range .TestParameters}}
+				{{Param .}} {{.Type}}
+		{{- end}}
+	}
+	{{- end}}
+	type test struct{
+        {{ if (not .Named)}}Name string{{end}}
+        {{- with .Receiver}}
+            {{- if and .IsStruct .Fields}}
+                Fields Fields
+            {{- else}}
+                {{Receiver .}} {{.Type}}
+            {{- end}}
+        {{- end}}
+        {{- if .TestParameters}}
+            Args Args
+        {{- end}}
+        {{- range .TestResults}}
+            {{Want .}} {{.Type}}
+        {{- end}}
+        {{- if .ReturnsError}}
+            WantErr bool
+        {{- end}}
+        Mocks   variablecard.MocksRecord
+        {{- if eq .UseMockType 3 }}
+        MonkeyOutputMap variablecard.MonkeyOutputMap
+        {{- end}}
+	}
+	defer func() {
+       wg{{$.Uid}}.Done()
+    }()
+	tt := test{}
+	duplicatepackagemanager.GetInstance(smartUnitCtx).SetRelativePath(tt)
+	var rowData []string
+	useMock := make(map[string]int,0)
+    for i:=0; i < {{$.TestCaseNum}}; i++ {
+        {{- if eq .UseMockType 2 }}mockito.PatchConvey(tt.Name, t, func(){ {{- else}} convey.Convey(tt.Name, t, func(){ {{end}}
+            mockRender :=  &mockfunc.StatementRender{
+                MockStatement: []string{},
+                MonkeyOutputMap: make(variablecard.MonkeyOutputMap, 0),
+                UsedMockFunc:       make(map[string]int,0),
+            };
+            {{- if eq .UseMockType 2 }}mockito.Mock(syscall.Connect).Return(fmt.Errorf("SU stops the Connection")) {{end}}
+            {{- if eq .UseMockType 3 }}
+            	connectPath := gomonkeyv2.ApplyFuncReturn(syscall.Connect,fmt.Errorf("SU stops the Connection"))
+            	defer connectPath.Reset()
+            {{- end}}
+            smartUnitCtx = contexthelper.SetVariableContext(smartUnitCtx, atgconstant.VariableContext{})
+            {{- range $.Builders}}
+               {{.}}
+            {{- end}}
+            tt = variablecard.VariableMutate(smartUnitCtx, reflect.TypeOf(tt), reflect.ValueOf(tt)).Interface().(test)
+            {{- range $.Mocks}}
+               {{.}}
+            {{- end}}
+            {{- if $.Subtests}}
+            {{- if .Parallel}}tt := tt;{{end}}
+            {{- if and .Parallel .Named}}name := name;{{ end }}
+            t.Run({{if .Named}}name{{else}}tt.name{{end}}, func(t *testing.T) {
+            {{- end}}
+                {{- with $.Receiver}}
+                    {{- if .IsStruct}}
+                        {{Receiver .}} := {{if .Type.IsStar}}&{{end}}{{.Type.Value}}{
+                        {{- range .Fields}}
+                             {{- if lt .Index .FieldMaxIndex}}
+                                {{.Name}}: tt.Fields.{{Field .}},
+                             {{- end}}
+                        {{- end}}
+                        }
+                    {{- end}}
+                {{- end}}
+                defer func() {
+                }()
+                {{- range $.Parameters}}
+                    {{- if .IsWriter}}
+                        {{Param .}} := &bytes.Buffer{}
+                    {{- end}}
+                {{- end}}
+                {{- if and (not $.OnlyReturnsError) (not $.OnlyReturnsOneValue) }}
+                    {{template "results" $f}} {{template "call" $f}}
+                {{- end}}
+                {{- if $.ReturnsError}}
+                    if {{if $.OnlyReturnsError}} err := {{template "call" $f}}; {{end}} (err != nil) != tt.WantErr {
+                            tt.WantErr = !tt.WantErr
+                    }
+                {{- end}}
+                {{- range $.TestResults}}
+                    {{- if .IsWriter}}
+                        if {{Got .}} := {{Param .}}.String(); {{Got .}} != tt.{{Want .}} {
+                    {{- else if .IsBasicType}}
+                        if {{if $f.OnlyReturnsOneValue}}{{Got .}} := {{template "inline" $f}}; {{end}} {{Got .}} != tt.{{Want .}} {
+                    {{- else}}
+                        if {{if $f.OnlyReturnsOneValue}}{{Got .}} := {{template "inline" $f}}; {{end}} !reflect.DeepEqual({{Got .}}, tt.{{Want .}}) {
+                    {{- end}}
+                        tt.{{Want .}} = {{Got .}}
+                    }
+                {{- end}}
+                tt.Mocks = mockRender.MockStatement
+                useMock =  mockRender.UsedMockFunc
+                {{- if eq .UseMockType 3 }}
+                    tt.MonkeyOutputMap=mockRender.MonkeyOutputMap
+                {{- end}}
+                rowData = append(rowData, variablecard.ValueToString(smartUnitCtx,  reflect.ValueOf(tt)))
+            {{- if $.Subtests }} }) {{- end -}}
+        })
+	}
+    if len(rowData) <= 0{
+        return
+    }
+    declLocker.Lock()
+    declData["{{- $.FullName }}"] = rowData
+    useMockMap["{{- $.FullName }}"] = useMock
+    declLocker.Unlock()
+}(t)
+{{end}}

@@ -1,0 +1,100 @@
+{{define "basefunc"}}
+{{- $f := .}}
+
+// we create the test template for the runnable function
+// please fill the testcase and mock function
+func {{.TestName}}(t *testing.T) {
+    {{- range $.GlobalInit}}
+         {{.}}
+    {{- end}}
+	{{- with .Receiver}}
+		{{- if .IsStruct}}
+			{{- if .Fields}}
+				type Fields struct {
+				{{- range .Fields}}
+					{{Field .}} {{.Type}}
+				{{- end}}
+				}
+			{{- end}}
+		{{- end}}
+	{{- end}}
+	{{- if .TestParameters}}
+	type Args struct {
+		{{- range .TestParameters}}
+				{{Param .}} {{.Type}}
+		{{- end}}
+	}
+	{{- end}}
+    type test struct{
+        {{ if (not .Named)}}Name string{{end}}
+        {{- with .Receiver}}
+            {{- if and .IsStruct .Fields}}
+                Fields Fields
+            {{- else}}
+                {{Receiver .}} {{.Type}}
+            {{- end}}
+        {{- end}}
+        {{- if .TestParameters}}
+            Args Args
+        {{- end}}
+        {{- range .TestResults}}
+            {{Want .}} {{.Type}}
+        {{- end}}
+        {{- if .ReturnsError}}
+            WantErr bool
+        {{- end}}
+    }
+    tests := []test{
+        // TODO: add the testcase
+    }
+	for _, tt :=  range tests {
+	 {{- if eq .UseMockType 2 }}mockito.PatchConvey(tt.Name, t, func(){ {{- else }} convey.Convey(tt.Name, t, func(){ {{end}}
+	    // TODO: add the return of mock functions
+        {{- range $.Mocks}}
+           {{.}}
+        {{- end}}
+		{{- if .Subtests}}
+		{{- if .Parallel}}tt := tt;{{end}}
+		{{- if and .Parallel .Named}}name := name;{{ end }}
+		t.Run({{if .Named}}name{{else}}tt.name{{end}}, func(t *testing.T) {
+			{{- if .Parallel}}t.Parallel(){{end}}
+		{{- end}}
+			{{- with .Receiver}}
+				{{- if .IsStruct}}
+					{{Receiver .}} := {{if .Type.IsStar}}&{{end}}{{.Type.Value}}{
+					{{- range .Fields}}
+						{{.Name}}: tt.Fields.{{Field .}},
+					{{- end}}
+					}
+				{{- end}}
+			{{- end}}
+			{{- range .Parameters}}
+				{{- if .IsWriter}}
+					{{Param .}} := &bytes.Buffer{}
+				{{- end}}
+			{{- end}}
+			{{- if and (not .OnlyReturnsError) (not .OnlyReturnsOneValue) }}
+				{{template "results" $f}} {{template "call" $f}}
+			{{- end}}
+			{{- if .ReturnsError}}
+				if {{if .OnlyReturnsError}} err := {{template "call" $f}}; {{end}} (err != nil) != tt.WantErr {
+					t.Errorf("{{template "message" $f}} error = %v, wantErr %v", {{template "inputs" $f}} err, tt.WantErr)
+				}
+			{{- end}}
+			{{- range .TestResults}}
+				{{- if .IsWriter}}
+					if {{Got .}} := {{Param .}}.String(); {{Got .}} != tt.{{Want .}} {
+				{{- else if .IsBasicType}}
+					if {{if $f.OnlyReturnsOneValue}}{{Got .}} := {{template "inline" $f}}; {{end}} {{Got .}} != tt.{{Want .}} {
+				{{- else}}
+					if {{if $f.OnlyReturnsOneValue}}{{Got .}} := {{template "inline" $f}}; {{end}} !reflect.DeepEqual({{Got .}}, tt.{{Want .}}) {
+				{{- end}}
+				t.Errorf("{{template "message" $f}} {{if $f.ReturnsMultiple}}{{Got .}} {{end}}= %v, want %v", {{template "inputs" $f}} {{Got .}}, tt.{{Want .}})
+				}
+			{{- end}}
+		{{- if .Subtests }} }) {{- end -}}
+        })
+	}
+}
+
+{{end}}
