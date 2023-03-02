@@ -84,21 +84,12 @@ func TestExampleFunction_URRDGU(t *testing.T) {
 
 
 ## How To Use
-Step1: Clone code
+### Installation
 ```
-git clone https://github.com/bytedance/NxtUnit
+git install https://github.com/bytedance/nxt_unit@latest
 ```
-Step2: install it locally
-```
-cd NxtUnit
-go install
-```
-Step3: Generate the unit test
-```
-./nxt_unit -file_path=[your path] -receiver_name=Decoder -receiver_is_star=true -function_name=Decode -usage=plugin
--go=/usr/local/go/bin/go
-```
-Explanation of the parameters
+
+### Explanation of the parameters
 ```
 -function_name means your function name
 -receiver_name means the receiver name
@@ -107,11 +98,16 @@ Explanation of the parameters
 -go is your local go path
 -file_name is your absolute go path
 ```
-
+###  Generate the unit test
+```
+nxt_unit -file_path=[your path] -receiver_name=Decoder -receiver_is_star=true -function_name=Decode -usage=plugin
+-go=/usr/local/go/bin/go
+```
+### Run generated unit test
+Remenber to add go build flag: `-gcflags "all=-N -l"`
 ## Generation-Failure
 ### solutions
-【panic: permission denied】if your GoVersion>=1.17,
-solution：
+【panic: permission denied】if your GoVersion>=1.17 on macOS Catalina 10.15.x
 ### 1.download the tool
 cd `go env GOPATH`
 git clone https://github.com/eisenxp/macos-golink-wrapper.git
@@ -121,10 +117,6 @@ mv `go env GOTOOLDIR`/link `go env GOTOOLDIR`/original_link
 cp `go env GOPATH`/macos-golink-wrapper/link  `go env GOTOOLDIR`/link 
 ### 4. authorize link
 chmod +x `go env GOTOOLDIR`/link
-
-### Configure your IDE
-Add the below argument to your IDE:
-Go tool argument: -gcflags "all=-N -l"
 
 
 ## License

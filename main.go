@@ -18,8 +18,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	mateAtgconstant "github.com/bytedance/nxt_unit/atgconstant"
-	"github.com/bytedance/nxt_unit/manager/logextractor"
 	"os"
 	"os/exec"
 	"path"
@@ -29,6 +27,7 @@ import (
 	"github.com/bytedance/nxt_unit/atghelper"
 	matePkgManager "github.com/bytedance/nxt_unit/manager/duplicatepackagemanager"
 	"github.com/bytedance/nxt_unit/manager/lifemanager"
+	"github.com/bytedance/nxt_unit/manager/logextractor"
 	"github.com/bytedance/nxt_unit/staticcase"
 )
 
@@ -48,8 +47,6 @@ var (
 	currentTag     = "unknown"
 )
 
-var help string
-
 func Init() {
 	bi, ok := debug.ReadBuildInfo()
 	if ok {
@@ -58,7 +55,6 @@ func Init() {
 		logextractor.ExecutionLog.Log("Failed to get the current version")
 	}
 	flag.StringVar(&atgconstant.GoDirective, "go", "go", "Path or command of go directive")
-	flag.StringVar(&help, "help", "help", "help message for nxt_unit flags")
 	matePkgManager.Init()
 }
 
@@ -75,7 +71,7 @@ func main() {
 		return
 	}
 
-	if *debugMode == true {
+	if *debugMode {
 		cmd := exec.Command("bash", "-c", "go env")
 		output, _ := cmd.CombinedOutput()
 		goEnv := string(output)
@@ -111,7 +107,7 @@ func main() {
 	case atgconstant.SplitFunctionMode:
 		SplitFunctionTask()
 	default:
-		fmt.Println("Please give your usage")
+		flag.PrintDefaults()
 	}
 }
 
@@ -283,5 +279,5 @@ func GetUseMockType(dir string) int {
 	// case mateAtgconstant.UseMockUnknown:
 	// 	return mateAtgconstant.UseGoMonkeyMock
 	// }
-	return mateAtgconstant.UseGoMonkeyMock
+	return atgconstant.UseGoMonkeyMock
 }
