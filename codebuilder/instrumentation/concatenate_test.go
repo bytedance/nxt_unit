@@ -2,15 +2,20 @@ package instrumentation
 
 import (
 	"path"
+	"runtime"
 	"testing"
 
-	"github.com/bytedance/nxt_unit/atgconstant"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetConvertedImportsFromSrc(t *testing.T) {
-	path := path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atghelper/atgutil_test.go")
-	convertedImports, err := GetImportsInfosFromFile(path)
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atghelper/atgutil_test.go")
+	convertedImports, err := GetImportsInfosFromFile(filePath)
 	assert.Nil(t, err)
 	assert.Equal(t, len(convertedImports), 3)
 }

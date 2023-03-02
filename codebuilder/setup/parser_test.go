@@ -3,6 +3,7 @@ package setup
 import (
 	"fmt"
 	"path"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -12,8 +13,14 @@ import (
 
 // This case will find two functions of consume
 func TestGetFunctions3(t *testing.T) {
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/receiver.go")
 	opt := atgconstant.Options{
-		FilePath:     path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/receiver.go"),
+		FilePath:     filePath,
 		MinUnit:      "function",
 		DebugMode:    true,
 		Usage:        "plugin",
@@ -25,8 +32,14 @@ func TestGetFunctions3(t *testing.T) {
 }
 
 func TestGetFunctions4(t *testing.T) {
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/receiver.go")
 	opt := atgconstant.Options{
-		FilePath:     path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/receiver.go"),
+		FilePath:     filePath,
 		MinUnit:      "function",
 		DebugMode:    true,
 		Usage:        "plugin",
@@ -38,8 +51,14 @@ func TestGetFunctions4(t *testing.T) {
 }
 
 func TestGetReferences(t *testing.T) {
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/dataanalysis.go")
 	opt := atgconstant.Options{
-		FilePath:  path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/dataanalysis.go"),
+		FilePath:  filePath,
 		MinUnit:   "function",
 		DebugMode: true,
 		Usage:     "plugin",
@@ -56,8 +75,14 @@ func TestGetReferences(t *testing.T) {
 }
 
 func TestGetReferencesPointer(t *testing.T) {
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/dataanalysis.go")
 	opt := atgconstant.Options{
-		FilePath:  path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/dataanalysis.go"),
+		FilePath:  filePath,
 		MinUnit:   "function",
 		DebugMode: true,
 		Usage:     "plugin",
