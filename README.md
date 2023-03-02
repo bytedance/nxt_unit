@@ -86,7 +86,7 @@ func TestExampleFunction_URRDGU(t *testing.T) {
 ## How To Use
 ### Installation
 ```
-git install https://github.com/bytedance/nxt_unit@latest
+go install https://github.com/bytedance/nxt_unit@latest
 ```
 
 ### Explanation of the parameters
