@@ -357,9 +357,15 @@ func TestGetAllMock(t *testing.T) {
 
 func TestGetGlobalValueBuilder(t *testing.T) {
 	ctx := contexthelper.GetTestContext()
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../atg/mockpkg/dao/query.go")
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = "function"
-	opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/mockpkg/dao/query.go")
+	opt.FilePath = filePath
 	opt.DirectoryPath = path.Dir(opt.FilePath)
 	opt.FuncName = "CallGlobalInterface"
 	opt.Uid = atghelper.RandStringBytes(5)
@@ -374,9 +380,15 @@ func TestGetGlobalValueBuilder(t *testing.T) {
 
 func TestGetGlobalPointerBuilder(t *testing.T) {
 	ctx := contexthelper.GetTestContext()
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../atg/mockpkg/dao/query.go")
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = "function"
-	opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/mockpkg/dao/query.go")
+	opt.FilePath = filePath
 	opt.DirectoryPath = path.Dir(opt.FilePath)
 	opt.FuncName = "CallGlobalPointer"
 	opt.Uid = atghelper.RandStringBytes(5)
@@ -401,9 +413,15 @@ func TestPluginSDK_GlobalValue(t *testing.T) {
 			lifemanager.Closer.Close()
 		}()
 		ctx := contexthelper.GetTestContext()
+		_, filePath, _, ok := runtime.Caller(0)
+		if !ok {
+			assert.Equal(t, ok, true)
+			return
+		}
+		filePath = path.Join(path.Dir(filePath), "../atg/mockpkg/dao/query.go")
 		opt, _ := contexthelper.GetOption(ctx)
 		opt.MinUnit = "file"
-		opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/mockpkg/dao/query.go")
+		opt.FilePath = filePath
 		opt.DirectoryPath = path.Dir(opt.FilePath)
 		opt.FuncName = "CallGlobalInterface"
 		opt.Uid = atghelper.RandStringBytes(5)
@@ -437,9 +455,15 @@ func TestPluginSDK_GlobalValue(t *testing.T) {
 
 func TestGetPickStructFieldBuilder(t *testing.T) {
 	ctx := contexthelper.GetTestContext()
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../atg/template/dataanalysis.go")
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = "function"
-	opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/dataanalysis.go")
+	opt.FilePath = filePath
 	opt.DirectoryPath = path.Dir(opt.FilePath)
 	opt.FuncName = "QueryData"
 	opt.Uid = atghelper.RandStringBytes(5)
@@ -457,8 +481,14 @@ func TestGetPickStructFieldBuilder(t *testing.T) {
 func TestGetPickStructFieldBuilderss(t *testing.T) {
 	ctx := contexthelper.GetTestContext()
 	opt, _ := contexthelper.GetOption(ctx)
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../atg/mockpkg/dao/query.go")
 	opt.MinUnit = "file"
-	opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/mockpkg/dao/query.go")
+	opt.FilePath = filePath
 	opt.DirectoryPath = path.Dir(opt.FilePath)
 	opt.FuncName = "CallGlobalInterface"
 	opt.Uid = atghelper.RandStringBytes(5)
