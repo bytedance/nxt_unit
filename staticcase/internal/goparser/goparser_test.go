@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/bytedance/nxt_unit/codebuilder/setup/graph"
+	"gotest.tools/assert"
 
 	"github.com/bytedance/nxt_unit/atghelper/contexthelper"
 	"github.com/bytedance/nxt_unit/staticcase/internal/models"
@@ -15,9 +17,14 @@ import (
 )
 
 func TestParser_Parse_Interface(t *testing.T) {
-	src := path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/interface.go")
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/interface.go")
 	p := &Parser{}
-	sr, err := p.Parse(string(src), nil)
+	sr, err := p.Parse(filePath, nil)
 	if err != nil {
 		t.Fatalf("Parser.Parse source file: %v", err)
 	}
@@ -40,16 +47,21 @@ func TestParser_Parse(t *testing.T) {
 }
 
 func TestParser_Parse_Interface_OtherPkg(t *testing.T) {
-	src := path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/interface.go")
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/interface.go")
 	p := &Parser{}
-	sr, err := p.Parse(string(src), nil)
+	sr, err := p.Parse(filePath, nil)
 	if err != nil {
 		t.Fatalf("Parser.Parse source file: %v", err)
 	}
 	ctx := contexthelper.GetTestContext()
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = atgconstant.MinUnit
-	opt.FilePath = src
+	opt.FilePath = filePath
 	opt.DirectoryPath = filepath.Dir(opt.FilePath)
 	opt.FuncName = "DeepCopy"
 	// funcs, err := setup.GetFunctions(opt)
@@ -77,16 +89,21 @@ func TestParser_Parse_Interface_OtherPkg(t *testing.T) {
 }
 
 func TestParser_Parse_Interface_OtherPkg_Reciver(t *testing.T) {
-	src := path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/interface.go")
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/interface.go")
 	p := &Parser{}
-	sr, err := p.Parse(string(src), nil)
+	sr, err := p.Parse(filePath, nil)
 	if err != nil {
 		t.Fatalf("Parser.Parse source file: %v", err)
 	}
 	ctx := contexthelper.GetTestContext()
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = atgconstant.MinUnit
-	opt.FilePath = src
+	opt.FilePath = filePath
 	opt.DirectoryPath = filepath.Dir(opt.FilePath)
 	opt.FuncName = "DeepCopyS"
 	var target *models.Function
@@ -104,16 +121,21 @@ func TestParser_Parse_Interface_OtherPkg_Reciver(t *testing.T) {
 }
 
 func TestParser_Parse_EmptyInterface(t *testing.T) {
-	src := path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/interface.go")
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/interface.go")
 	p := &Parser{}
-	sr, err := p.Parse(string(src), nil)
+	sr, err := p.Parse(filePath, nil)
 	if err != nil {
 		t.Fatalf("Parser.Parse source file: %v", err)
 	}
 	ctx := contexthelper.GetTestContext()
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = atgconstant.MinUnit
-	opt.FilePath = src
+	opt.FilePath = filePath
 	opt.DirectoryPath = filepath.Dir(opt.FilePath)
 	opt.FuncName = "StructToMap"
 	var target *models.Function
