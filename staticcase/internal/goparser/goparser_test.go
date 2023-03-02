@@ -22,7 +22,7 @@ func TestParser_Parse_Interface(t *testing.T) {
 		assert.Equal(t, ok, true)
 		return
 	}
-	filePath = path.Join(path.Dir(filePath), "../../atg/template/interface.go")
+	filePath = path.Join(path.Dir(filePath), "../../../atg/template/interface.go")
 	p := &Parser{}
 	sr, err := p.Parse(filePath, nil)
 	if err != nil {
@@ -52,7 +52,7 @@ func TestParser_Parse_Interface_OtherPkg(t *testing.T) {
 		assert.Equal(t, ok, true)
 		return
 	}
-	filePath = path.Join(path.Dir(filePath), "../../atg/template/interface.go")
+	filePath = path.Join(path.Dir(filePath), "../../../atg/template/interface.go")
 	p := &Parser{}
 	sr, err := p.Parse(filePath, nil)
 	if err != nil {
@@ -94,7 +94,7 @@ func TestParser_Parse_Interface_OtherPkg_Reciver(t *testing.T) {
 		assert.Equal(t, ok, true)
 		return
 	}
-	filePath = path.Join(path.Dir(filePath), "../../atg/template/interface.go")
+	filePath = path.Join(path.Dir(filePath), "../../../atg/template/interface.go")
 	p := &Parser{}
 	sr, err := p.Parse(filePath, nil)
 	if err != nil {
@@ -126,7 +126,7 @@ func TestParser_Parse_EmptyInterface(t *testing.T) {
 		assert.Equal(t, ok, true)
 		return
 	}
-	filePath = path.Join(path.Dir(filePath), "../../atg/template/interface.go")
+	filePath = path.Join(path.Dir(filePath), "../../../atg/template/interface.go")
 	p := &Parser{}
 	sr, err := p.Parse(filePath, nil)
 	if err != nil {
