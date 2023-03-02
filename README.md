@@ -100,7 +100,7 @@ git install https://github.com/bytedance/nxt_unit@latest
 ```
 ###  Generate the unit test
 ```
-./nxt_unit -file_path=[your path] -receiver_name=Decoder -receiver_is_star=true -function_name=Decode -usage=plugin
+nxt_unit -file_path=[your path] -receiver_name=Decoder -receiver_is_star=true -function_name=Decode -usage=plugin
 -go=/usr/local/go/bin/go
 ```
 ### Run generated unit test
