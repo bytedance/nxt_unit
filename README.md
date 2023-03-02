@@ -1,7 +1,8 @@
 # NxtUnit
+`NxtUnit` is an automatically unit test generation application for Go.\
+You can compile it as the binary package and run it.
 
-`NxtUnit` is an automatically unit test generation application for Go, you can compile it as the binary package and run it
-
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue)](https://github.com/bytedance/nxt_unit/blob/master/LICENSE)
 ## Table of Contents
 
 - [Introduction](#Introduction)
@@ -17,15 +18,12 @@ which is a popular statically compiled and typed programming language in the ind
 and used extensively in our production environment
 
 `NxtUnit` is the tool that can automatically generate the unit test for Go. For example, given the original code
-```
-func Example (input1 int, input2 int) 
-int {
-   if input1*input2 > 9 
-   {
+```Go
+func Example (input1 int, input2 int) {
+   if input1*input2 > 9 {
       return input1
    }
-   switch input1 
-   {
+   switch input1 {
    case 20:
       input1 = +RPCCallee1(input2)
    case 40:
@@ -36,11 +34,12 @@ int {
 ```
 
 it can generate the unit test like below
-```
+```Go
 import (
    testing "testing"
-   gomonkeyv2 "github.com/agiledragon/gomonkey/v2"
-   convey "github.com/smartystreets/goconvey/convey" )
+   gomonkey "github.com/agiledragon/gomonkey/v2"
+   convey "github.com/smartystreets/goconvey/convey" 
+)
 func TestExampleFunction_URRDGU(t *testing.T) {
    type Args struct {
       Input1 int,  Input2 int
@@ -72,7 +71,7 @@ func TestExampleFunction_URRDGU(t *testing.T) {
    for _, tt := range tests {
       convey.Convey(tt.Name, t, func() {
          tt.Mocks()
-         PTNFTPatch := gomonkeyv2.ApplyFuncReturn(RPCCallee1, tt.MonkeyOutputMap["RPCCallee1"][0])
+         PTNFTPatch := gomonkey.ApplyFuncReturn(RPCCallee1, tt.MonkeyOutputMap["RPCCallee1"][0])
          defer PTNFTPatch.Reset()
     if got := ExampleFunction(tt.Args.Input1, tt.Args.Input2); got != tt.Want {
             convey.So(got, convey.ShouldResemble, tt.Want)
@@ -89,34 +88,56 @@ func TestExampleFunction_URRDGU(t *testing.T) {
 go install https://github.com/bytedance/nxt_unit@latest
 ```
 
-### Explanation of the parameters
+### Usage
 ```
--function_name means your function name
--receiver_name means the receiver name
--receiver_is_star means whether your receiver is a pointer or not.
--usage has two version: plugin is to generate the unit test. -pluginq is to generate the template
--go is your local go path
--file_name is your absolute go path
+-function_name(required)
+    function name
+-receiver_name(optional)
+    the receiver name of your function
+-receiver_is_star(optional) 
+    whether your receiver is a pointer or not
+-usage(required)
+    option1: generate the unit test
+    option2: generate the template
+-go(optional) 
+    your local go path
+-file_name(required)
+    absolute go path
 ```
-###  Generate the unit test
+###  Example
 ```
-nxt_unit -file_path=[your path] -receiver_name=Decoder -receiver_is_star=true -function_name=Decode -usage=plugin
+go build
+./nxt_unit -file_path=[your path] -receiver_name=Decoder -receiver_is_star=true -function_name=Decode -usage=plugin
 -go=/usr/local/go/bin/go
 ```
 ### Run generated unit test
-Remenber to add go build flag: `-gcflags "all=-N -l"`
-## Generation-Failure
-### solutions
-【panic: permission denied】if your GoVersion>=1.17 on macOS Catalina 10.15.x
-### 1.download the tool
+```
+go test xxxx_test.go -gcflags "all=-N -l"
+```
+`-gcflags "all=-N -l"` used for unblocking the inlining of the function
+## Failure Scenarios
+The failure might be caused by the following reasons:
+1. The function is not exported
+2. The fault of the gomonkey
+
+### Solution for the gomonkey
+1 download the tool
+```
 cd `go env GOPATH`
 git clone https://github.com/eisenxp/macos-golink-wrapper.git
-### 2. rename the link to original_link
+```
+2 rename the link to original_link
+```
 mv `go env GOTOOLDIR`/link `go env GOTOOLDIR`/original_link 
-### 3. copy tool to GOTOOLDIR
+```
+3 copy tool to GOTOOLDIR
+```
 cp `go env GOPATH`/macos-golink-wrapper/link  `go env GOTOOLDIR`/link 
-### 4. authorize link
+```
+4 authorize link
+```
 chmod +x `go env GOTOOLDIR`/link
+```
 
 
 ## License
