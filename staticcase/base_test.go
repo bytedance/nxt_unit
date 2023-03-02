@@ -93,7 +93,7 @@ func TestGenerateBaseTest(t *testing.T) {
 			assert.Equal(t, ok, true)
 			return
 		}
-		filePath = path.Join(path.Dir(filePath), "..atg/template")
+		filePath = path.Join(path.Dir(filePath), "../atg/template")
 		opt, _ := contexthelper.GetOption(ctx)
 		opt.MinUnit = atgconstant.MinUnit
 		opt.DirectoryPath = filePath

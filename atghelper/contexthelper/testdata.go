@@ -18,15 +18,21 @@ package contexthelper
 import (
 	"context"
 	"path"
+	"runtime"
 
 	"github.com/bytedance/nxt_unit/atgconstant"
 	"github.com/bytedance/nxt_unit/codebuilder/setup"
 )
 
 func GetTestContext() context.Context {
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		return nil
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/atg.go")
 	option := atgconstant.Options{
 		FuncName:     "GoodFunc",
-		FilePath:     path.Join(atgconstant.GOPATHSRC, "github.com/bytedance/nxt_unit/atg/template/atg.go"),
+		FilePath:     filePath,
 		Level:        1,
 		Maxtime:      4,
 		GenerateType: atgconstant.GAMode,
@@ -45,15 +51,22 @@ func GetTestContext() context.Context {
 }
 
 func GetTestContextV2() context.Context {
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		return nil
+	}
+	filePath = path.Dir(filePath)
+	directoryPath := path.Join(filePath, "../../atg/template")
+	filePath = path.Join(filePath, "../../atg/template/atg.go")
 	option := atgconstant.Options{
 		FuncName:      "siwei123",
-		FilePath:      path.Join(atgconstant.GOPATHSRC, "github.com/bytedance/nxt_unit/atg/template/atg.go"),
+		FilePath:      filePath,
 		Level:         1,
 		Maxtime:       4,
 		GenerateType:  atgconstant.GAMode,
 		MinUnit:       "file",
 		Uid:           "Vector",
-		DirectoryPath: path.Join(atgconstant.GOPATHSRC, "github.com/bytedance/nxt_unit/atg/template"),
+		DirectoryPath: directoryPath,
 	}
 	sourceFunc, err := setup.GetFunctions(option)
 	if err != nil {
