@@ -3,14 +3,17 @@ package staticcase
 import (
 	"context"
 	"fmt"
-	"github.com/agiledragon/gomonkey/v2"
-	"github.com/smartystreets/goconvey/convey"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/agiledragon/gomonkey/v2"
+	"github.com/smartystreets/goconvey/convey"
+	"gotest.tools/assert"
 
 	"github.com/bytedance/nxt_unit/manager/lifemanager"
 
@@ -37,11 +40,17 @@ func TestBackStage_RunFunction(t *testing.T) {
 			lifemanager.Closer.Close()
 		}()
 		ctx := context.Background()
+		_, filePath, _, ok := runtime.Caller(0)
+		if !ok {
+			assert.Equal(t, ok, true)
+			return
+		}
+		filePath = path.Join(path.Dir(filePath), "../atg/template/receiver.go")
 		opt, _ := contexthelper.GetOption(ctx)
 		opt.MinUnit = "function"
 		opt.FuncName = "Consume"
 		opt.ReceiverName = "SpecialConsumption"
-		opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/receiver.go")
+		opt.FilePath = filePath
 
 		ctx, err := getContext(opt)
 		if err != nil {
@@ -79,9 +88,15 @@ func TestGenerateBaseTest(t *testing.T) {
 		patch3 := gomonkey.ApplyFuncReturn(os.Rename, nil)
 		defer patch3.Reset()
 		ctx := contexthelper.GetTestContext()
+		_, filePath, _, ok := runtime.Caller(0)
+		if !ok {
+			assert.Equal(t, ok, true)
+			return
+		}
+		filePath = path.Join(path.Dir(filePath), "..atg/template")
 		opt, _ := contexthelper.GetOption(ctx)
 		opt.MinUnit = atgconstant.MinUnit
-		opt.DirectoryPath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template")
+		opt.DirectoryPath = filePath
 		ctx, err := getContext(opt)
 		if err != nil {
 			t.Fatal(err)
@@ -100,13 +115,21 @@ func TestConstructorRun(t *testing.T) {
 		defer func() {
 			lifemanager.Closer.Close()
 		}()
+		_, filePath, _, ok := runtime.Caller(0)
+		if !ok {
+			assert.Equal(t, ok, true)
+			return
+		}
+		filePath = path.Dir(filePath)
+		directoryPath := path.Join(filePath, "../atg/template/constructer_callers.go")
+		filePath = path.Join(filePath, "../atg/template/constructer_callers.go")
 		opt := atgconstant.Options{
 			Level:         1,
 			Maxtime:       4,
 			GenerateType:  atgconstant.GAMode,
 			MinUnit:       "function",
-			FilePath:      path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/constructer_callers.go"),
-			DirectoryPath: path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template"),
+			FilePath:      filePath,
+			DirectoryPath: directoryPath,
 			FuncName:      "PrintName",
 			Uid:           atghelper.RandStringBytes(5),
 			Usage:         "plugin",
@@ -151,8 +174,14 @@ func TestGenerateBaseTest_Function(t *testing.T) {
 			lifemanager.Closer.Close()
 		}()
 		ctx := contexthelper.GetTestContext()
+		_, filePath, _, ok := runtime.Caller(0)
+		if !ok {
+			assert.Equal(t, ok, true)
+			return
+		}
+		filePath = path.Join(path.Dir(filePath), "../atg/template")
 		opt, _ := contexthelper.GetOption(ctx)
-		opt.DirectoryPath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template")
+		opt.DirectoryPath = filePath
 		opt.MinUnit = atgconstant.MinUnit
 		ctx, err := getContext(opt)
 		if err != nil {
@@ -166,8 +195,14 @@ func TestGenerateBaseTest_Function(t *testing.T) {
 }
 
 func TestGetDataStreamBuilder(t *testing.T) {
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../atg/template/dataanalysis.go")
 	opt := atgconstant.Options{
-		FilePath:  path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/dataanalysis.go"),
+		FilePath:  filePath,
 		MinUnit:   "function",
 		DebugMode: true,
 		Usage:     "plugin",
@@ -193,11 +228,19 @@ func TestGenerateBaseTest_Merge2(t *testing.T) {
 	patch2 := gomonkey.ApplyFuncReturn(os.Rename, nil)
 	defer patch2.Reset()
 	ctx := context.Background()
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Dir(filePath)
+	directoryPath := path.Join(filePath, "../atg/template")
+	filePath = path.Join(filePath, "../atg/template/receiver.go")
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = atgconstant.MinUnit
 	opt.MinUnit = "function"
-	opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/receiver.go")
-	opt.DirectoryPath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template")
+	opt.FilePath = filePath
+	opt.DirectoryPath = directoryPath
 	opt.FuncName = "GetSmartUnit"
 	opt.ReceiverName = "*mMT"
 	opt.Uid = atghelper.RandStringBytes(5)
@@ -223,11 +266,19 @@ func TestGenerateBaseTest_Merge(t *testing.T) {
 	patch2 := gomonkey.ApplyFuncReturn(os.Rename, nil)
 	defer patch2.Reset()
 	ctx := context.Background()
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Dir(filePath)
+	directoryPath := path.Join(filePath, "../atg/template")
+	filePath = path.Join(filePath, "../atg/template/receiver.go")
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = atgconstant.MinUnit
 	opt.MinUnit = "function"
-	opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/receiver.go")
-	opt.DirectoryPath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template")
+	opt.FilePath = filePath
+	opt.DirectoryPath = directoryPath
 	opt.FuncName = "CheckBigStruct"
 	opt.ReceiverName = "*AdBigStruct"
 	opt.Uid = atghelper.RandStringBytes(5)
@@ -253,11 +304,19 @@ func TestGenerateBaseTest_ReNameFunction(t *testing.T) {
 	patch2 := gomonkey.ApplyFuncReturn(os.Rename, nil)
 	defer patch2.Reset()
 	ctx := context.Background()
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Dir(filePath)
+	directoryPath := path.Join(filePath, "../atg/template")
+	filePath = path.Join(filePath, "../atg/template/receiver.go")
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = atgconstant.MinUnit
 	opt.MinUnit = "function"
-	opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/receiver.go")
-	opt.DirectoryPath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template")
+	opt.FilePath = filePath
+	opt.DirectoryPath = directoryPath
 	opt.FuncName = "GetAbParamsMap"
 	// opt.ReceiverName = "TikTokConsumption"
 	opt.Uid = atghelper.RandStringBytes(5)
@@ -273,8 +332,14 @@ func TestGenerateBaseTest_ReNameFunction(t *testing.T) {
 }
 func TestGetAllMock(t *testing.T) {
 	ctx := contexthelper.GetTestContext()
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../atg/template")
 	opt, _ := contexthelper.GetOption(ctx)
-	opt.DirectoryPath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template")
+	opt.DirectoryPath = filePath
 	opt.MinUnit = "function"
 	opt.FuncName = "FunctionReturnError"
 	opt.Uid = atghelper.RandStringBytes(5)

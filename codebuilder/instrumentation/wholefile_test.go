@@ -1,28 +1,31 @@
 package instrumentation
 
 import (
-	"fmt"
 	"path"
+	"runtime"
 	"testing"
 
-	"github.com/bytedance/nxt_unit/atgconstant"
 	"github.com/bytedance/nxt_unit/atghelper/contexthelper"
+	"github.com/stretchr/testify/assert"
 	"golang.org/x/tools/imports"
 )
 
 func TestNewInstrumentation(t *testing.T) {
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/ifstatement.go")
 	ctx := contexthelper.GetTestContext()
 	opt, _ := contexthelper.GetOption(ctx)
 	opt.MinUnit = "function"
 	opt.FuncName = "CompareInteger"
 	opt.ReceiverName = "TikTokConsumption"
-	opt.FilePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "atg/template/ifstatement.go")
+	opt.FilePath = filePath
 
 	o, _, err := NewInstrumentation(opt.FilePath, opt.FuncName, opt.Uid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	code, err := imports.Process("", o, nil)
-	fmt.Println(string(code))
-
+	assert.Equal(t, err, nil)
+	_, err = imports.Process("", o, nil)
+	assert.Equal(t, err, nil)
 }
