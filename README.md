@@ -3,6 +3,7 @@
 You can compile it as the binary package and run it.
 
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue)](https://github.com/bytedance/nxt_unit/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/bytedance/nxt_unit/branch/main/graph/badge.svg)](https://codecov.io/gh/bytedance/nxt_unit)
 ## Table of Contents
 
 - [Introduction](#Introduction)
