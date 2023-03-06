@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/agiledragon/gomonkey/v2"
 	"io/ioutil"
 	"path"
 	"testing"
+
+	"github.com/agiledragon/gomonkey/v2"
 
 	"github.com/bytedance/nxt_unit/manager/lifemanager"
 	"github.com/smartystreets/goconvey/convey"
@@ -57,7 +58,6 @@ func TestPlugin_Functions(t *testing.T) {
 		*usage = atgconstant.PluginMode
 		// *ReceiverName = "Iss"
 		// *ReceiverIsStar = true
-		atgconstant.GoDirective = "/usr/local/go/bin/go"
 		// patch := gomonkey.ApplyFuncReturn(ioutil.WriteFile, nil)
 		// defer patch.Reset()
 		Plugin()
