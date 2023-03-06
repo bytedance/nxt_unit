@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"path"
+	"runtime"
 	"testing"
 
 	"github.com/agiledragon/gomonkey/v2"
@@ -13,19 +14,26 @@ import (
 	"github.com/bytedance/nxt_unit/atgconstant"
 )
 
+var homeDir = ""
+
+func TestMain(m *testing.M) {
+	_, homeDir, _, _ = runtime.Caller(0)
+	m.Run()
+}
+
 func TestPlugin_Function(t *testing.T) {
 	convey.Convey("GlobalValue", t, func() {
-		// defer func() {
-		// 	lifemanager.Closer.Close()
-		// }()
-		*filePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/atg.go")
+		defer func() {
+			lifemanager.Closer.Close()
+		}()
+		*filePath = path.Join(homeDir, "/atg/template/atg.go")
 		*minUnit = atgconstant.MinUnit
 		*funcName = "GoodFunc"
 		*debugMode = true
 		*usage = atgconstant.PluginMode
 		*UseMockType = 3
-		// patch := gomonkey.ApplyFuncReturn(ioutil.WriteFile, nil)
-		// defer patch.Reset()
+		patch := gomonkey.ApplyFuncReturn(ioutil.WriteFile, nil)
+		defer patch.Reset()
 		Plugin()
 	})
 }
@@ -35,7 +43,7 @@ func TestPlugin_InterfaceFunction(t *testing.T) {
 		defer func() {
 			lifemanager.Closer.Close()
 		}()
-		*filePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/atg.go")
+		*filePath = path.Join(homeDir, "/atg/template/atg.go")
 		*minUnit = atgconstant.MinUnit
 		*funcName = "PrintInter"
 		*debugMode = true
@@ -51,15 +59,15 @@ func TestPlugin_Functions(t *testing.T) {
 		defer func() {
 			lifemanager.Closer.Close()
 		}()
-		*filePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/atg.go")
+		*filePath = path.Join(homeDir, "/atg/template/atg.go")
 		*minUnit = atgconstant.MinUnit
 		*funcName = "GoodFunc"
 		*debugMode = true
 		*usage = atgconstant.PluginMode
-		// *ReceiverName = "Iss"
-		// *ReceiverIsStar = true
-		// patch := gomonkey.ApplyFuncReturn(ioutil.WriteFile, nil)
-		// defer patch.Reset()
+		*ReceiverName = "Iss"
+		*ReceiverIsStar = true
+		patch := gomonkey.ApplyFuncReturn(ioutil.WriteFile, nil)
+		defer patch.Reset()
 		Plugin()
 	})
 }
@@ -69,7 +77,7 @@ func TestPlugin_File(t *testing.T) {
 		defer func() {
 			lifemanager.Closer.Close()
 		}()
-		*filePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/atg.go")
+		*filePath = path.Join(homeDir, "/atg/template/atg.go")
 		*minUnit = atgconstant.FileMode
 		*debugMode = true
 		*usage = atgconstant.PluginMode
@@ -85,7 +93,7 @@ func TestTemplate_atg(t *testing.T) {
 		defer func() {
 			lifemanager.Closer.Close()
 		}()
-		*filePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/atg.go")
+		*filePath = path.Join(homeDir, "/atg/template/atg.go")
 		*minUnit = atgconstant.FileMode
 		*funcName = "GoodFunc"
 		*debugMode = true
@@ -130,7 +138,7 @@ func TestTemplate_server(t *testing.T) {
 }
 
 func TestDeferCallGraph_Function(t *testing.T) {
-	*filePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/atg.go")
+	*filePath = path.Join(homeDir, "/atg/template/atg.go")
 	*minUnit = atgconstant.MinUnit
 	*funcName = "ComplexDeferFunction"
 	*debugMode = true
@@ -142,7 +150,7 @@ func TestDeferCallGraph_Function(t *testing.T) {
 }
 
 func TestGoRoutineCallGraph(t *testing.T) {
-	*filePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/atg.go")
+	*filePath = path.Join(homeDir, "/atg/template/atg.go")
 	*minUnit = atgconstant.MinUnit
 	*funcName = "ComplexGoRoutineFunction"
 	*debugMode = true
@@ -154,7 +162,7 @@ func TestGoRoutineCallGraph(t *testing.T) {
 }
 
 func TestDeferGoExistCallGraph(t *testing.T) {
-	*filePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template/atg.go")
+	*filePath = path.Join(homeDir, "/atg/template/atg.go")
 	*minUnit = atgconstant.MinUnit
 	*funcName = "ComplexDeferExistFunction"
 	*debugMode = true
