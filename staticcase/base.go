@@ -25,7 +25,6 @@ import (
 	"github.com/bytedance/nxt_unit/codebuilder/instrumentation"
 
 	"github.com/bytedance/nxt_unit/atgconstant"
-	mateAtgconstant "github.com/bytedance/nxt_unit/atgconstant"
 	"github.com/bytedance/nxt_unit/atghelper"
 	"github.com/bytedance/nxt_unit/atghelper/contexthelper"
 	"github.com/bytedance/nxt_unit/codebuilder/unitestframwork/testcase"
@@ -119,7 +118,7 @@ func (t *testsuiteEntry) Code(ctx context.Context) ([]byte, error) {
 
 func GetAllMock(ctx context.Context, useMockType int) map[string]map[string]int {
 	functionMockMap := make(map[string]map[string]int, 0)
-	if useMockType == mateAtgconstant.UseNoMock {
+	if useMockType == atgconstant.UseNoMock {
 		return functionMockMap
 	}
 	functionMap, _ := contexthelper.GetSetupFuncMap(ctx)
@@ -138,10 +137,10 @@ func GetAllMock(ctx context.Context, useMockType int) map[string]map[string]int 
 			default:
 				makeMockFunc := fmt.Sprintf("mockfunc.MakeCall(smartUnitCtx,\"%s\",mockRender,%s,%d)", stat.Expression, stat.Expression, useMockType)
 				switch useMockType {
-				case mateAtgconstant.UseGoMonkeyMock:
+				case atgconstant.UseGoMonkeyMock:
 					patchName := fmt.Sprintf("%sPatch", atghelper.RandStringBytes(5))
 					randomMock = fmt.Sprintf("%s := gomonkeyv2.ApplyFunc(%s,%s)\n\t\tdefer %s.Reset()", patchName, stat.Expression, makeMockFunc, patchName)
-				case mateAtgconstant.UseMockitoMock:
+				case atgconstant.UseMockitoMock:
 					randomMock = fmt.Sprintf("mockito.Mock(%s).To(%s).Build();", stat.Expression, makeMockFunc)
 				}
 
@@ -171,13 +170,13 @@ func GetBaseMockByTempleType(ctx context.Context, useMockType int) map[string]ma
 				randomMock = fmt.Sprint("// Please fill out the overpass mock yourself \n", "// ", stat.Expression, "(", stat.FunctionType, "{\n", "// \treturn [please fill the return here]\n", "//})")
 			default:
 				switch useMockType {
-				case mateAtgconstant.UseMockUnknown:
+				case atgconstant.UseMockUnknown:
 					randomMock = fmt.Sprintf("mockito.Mock(%s).Return().Build();", stat.Expression)
-				case mateAtgconstant.UseNoMock:
+				case atgconstant.UseNoMock:
 					// do nothing
-				case mateAtgconstant.UseMockitoMock:
+				case atgconstant.UseMockitoMock:
 					randomMock = fmt.Sprintf("mockito.Mock(%s).Return().Build();", stat.Expression)
-				case mateAtgconstant.UseGoMonkeyMock:
+				case atgconstant.UseGoMonkeyMock:
 					patchName := fmt.Sprintf("%sPatch", atghelper.RandStringBytes(5))
 					randomMock = fmt.Sprintf("%s := gomonkeyv2.ApplyFuncReturn(%s,\"%s\")\n\t\tdefer %s.Reset()", patchName, stat.Expression, "user fill function return output", patchName)
 				}
@@ -330,7 +329,7 @@ func GetGlobalValueBuilder(ctx context.Context) ([]string, []string) {
 							if realPkgName != "" {
 								statement = fmt.Sprintf("%s.%s", realPkgName, varName)
 							} else {
-								statement = fmt.Sprintf("%s", varName)
+								statement = varName
 							}
 						}
 

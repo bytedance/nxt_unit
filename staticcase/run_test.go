@@ -5,46 +5,36 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/bytedance/nxt_unit/atgconstant"
+	"github.com/bytedance/nxt_unit/atghelper/contexthelper"
+	"github.com/bytedance/nxt_unit/manager/lifemanager"
 	"github.com/stretchr/testify/assert"
 )
 
 // run in any path, it will Generate  middle test code in parallel by rendering to text file
-// func TestWork(t *testing.T) {
-// 	defer func() {
-// 		lifemanager.Closer.Close()
-// 	}()
-// 	workDir := path.Join(atgconstant.GOPATHSRC, "github.com/bytedance/nxt_unit/atg/template")
-// 	err := Work(workDir, "", 2)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	err = WorkToChangeGo(workDir, true)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
-
-// func TestEngineerTools(t *testing.T) {
-// 	// defer func() {
-// 	// 	lifemanager.Closer.Close()
-// 	// }()
-// 	workPath := "/Users/maoxue/go/src/github.com/bytedance/nxt_unit/atg/template/"
-// 	err := Work(workPath, "")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	err = WorkToChangeGo(workPath)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	err = GenerateTest(workPath)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
+func TestWork(t *testing.T) {
+	defer func() {
+		lifemanager.Closer.Close()
+	}()
+	_, filePath, _, ok := runtime.Caller(0)
+	if !ok {
+		assert.Equal(t, ok, true)
+		return
+	}
+	filePath = path.Join(path.Dir(filePath), "../atg/template")
+	err := Work(filePath, "", 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = WorkToChangeGo(filePath, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestCheckEmptyFileAndThenRemove(t *testing.T) {
 	dir, err := os.Getwd()
@@ -86,47 +76,47 @@ func Test_getTempFilePath(t *testing.T) {
 	}
 }
 
-// func TestGenerateTestOnPlugin(t *testing.T) {
-// 	defer func() {
-// 		lifemanager.Closer.Close()
-// 	}()
-// 	ctx := contexthelper.GetTestContext()
-// 	opt, _ := contexthelper.GetOption(ctx)
-// 	opt.Usage = atgconstant.PluginMode
-// 	opt.MinUnit = atgconstant.FileMode
-// 	opt.DirectoryPath = filepath.Dir(opt.FilePath)
-// 	err := WorkForPlugin(opt)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 		return
-// 	}
-// 	err = GenerateTestForPlugin(opt)
-// 	if err != nil {
-// 		ctx, err := Init(&opt)
-// 		if err != nil {
-// 			fmt.Printf("Sorry, we cannot generate the test for you, the error is %v\n", err.Error())
-// 		}
-// 		err = GenerateBaseTest(ctx)
-// 		if err != nil {
-// 			fmt.Printf("Sorry, we cannot generate base test %v\n", err.Error())
-// 		}
-// 		fmt.Println("Successfully generate the unit test template!")
-// 		return
-// 	}
-// }
+func TestGenerateTestOnPlugin(t *testing.T) {
+	defer func() {
+		lifemanager.Closer.Close()
+	}()
+	ctx := contexthelper.GetTestContext()
+	opt, _ := contexthelper.GetOption(ctx)
+	opt.Usage = atgconstant.PluginMode
+	opt.MinUnit = atgconstant.FileMode
+	opt.DirectoryPath = filepath.Dir(opt.FilePath)
+	err := WorkForPlugin(opt)
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+	err = GenerateTestForPlugin(opt)
+	if err != nil {
+		ctx, err := Init(&opt)
+		if err != nil {
+			fmt.Printf("Sorry, we cannot generate the test for you, the error is %v\n", err.Error())
+		}
+		err = GenerateBaseTest(ctx)
+		if err != nil {
+			fmt.Printf("Sorry, we cannot generate base test %v\n", err.Error())
+		}
+		fmt.Println("Successfully generate the unit test template!")
+		return
+	}
+}
 
-// func TestGenerateTestOnSplitFunctionMode(t *testing.T) {
-// 	defer func() {
-// 		lifemanager.Closer.Close()
-// 	}()
-// 	ctx := contexthelper.GetTestContext()
-// 	opt, _ := contexthelper.GetOption(ctx)
-// 	opt.Usage = atgconstant.SplitFunctionMode
-// 	opt.MinUnit = atgconstant.FileMode
-// 	opt.DirectoryPath = filepath.Dir(opt.FilePath)
-// 	err := WorkForSplitFunction(opt.DirectoryPath, 2)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 		return
-// 	}
-// }
+func TestGenerateTestOnSplitFunctionMode(t *testing.T) {
+	defer func() {
+		lifemanager.Closer.Close()
+	}()
+	ctx := contexthelper.GetTestContext()
+	opt, _ := contexthelper.GetOption(ctx)
+	opt.Usage = atgconstant.SplitFunctionMode
+	opt.MinUnit = atgconstant.FileMode
+	opt.DirectoryPath = filepath.Dir(opt.FilePath)
+	err := WorkForSplitFunction(opt.DirectoryPath, 2)
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+}

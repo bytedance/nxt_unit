@@ -24,8 +24,9 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	exitVal := m.Run()
+	atgconstant.GoDirective = "go"
 	atgconstant.PkgRelativePath = path.Join(atgconstant.GOPATHSRC, atgconstant.ProjectPath, "/atg/template")
+	exitVal := m.Run()
 	os.Exit(exitVal)
 }
 

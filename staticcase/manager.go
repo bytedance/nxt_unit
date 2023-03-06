@@ -60,7 +60,7 @@ func getContext(option atgconstant.Options) (ctx context.Context, err error) {
 					constructorMap[t] = funcList
 				}
 			} else {
-				fmt.Println(fmt.Sprintf("GetFunctions  FilePath %v,err %v", option.FilePath, err))
+				fmt.Printf("GetFunctions  FilePath %v,err %v\n", option.FilePath, err)
 			}
 		}
 		if !funcInfo.exist {
@@ -110,7 +110,7 @@ func getContext(option atgconstant.Options) (ctx context.Context, err error) {
 					constructorMap[t] = funcList
 				}
 			} else {
-				fmt.Println(fmt.Sprintf("GetFunctions  FilePath %v,funcArray %v,err %v", option.FilePath, option.FunctionList, err))
+				fmt.Printf("GetFunctions  FilePath %v,funcArray %v,err %v\n", option.FilePath, option.FunctionList, err)
 			}
 		}
 		if !funcInfo.exist {
@@ -133,7 +133,7 @@ func getContext(option atgconstant.Options) (ctx context.Context, err error) {
 
 // Plugin doesn't need to report the message. Only the debug mode, we can see the message.
 func ReportInternalError(option atgconstant.Options, err error, panicInfo string) {
-	if option.Usage == "plugin" && option.DebugMode == false {
+	if option.Usage == "plugin" && !option.DebugMode {
 		return
 	}
 	if err != nil {
