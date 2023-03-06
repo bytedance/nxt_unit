@@ -32,10 +32,8 @@ func Run(done func(), option atgconstant.Options) int {
 	var totalLine int
 	var panicInfo string
 	go func() {
-		select {
-		case <-time.After(time.Second * atgconstant.WithoutGATimeOut):
-			done()
-		}
+		<-time.After(time.Second * atgconstant.WithoutGATimeOut)
+		done()
 	}()
 	defer func() {
 		if err := recover(); err != nil {
@@ -162,14 +160,6 @@ func WorkToChangeGo(dir string, shouldPrintLog bool) error {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		ReNameFileToGo(path, "middle_code.txt", "middle_code_test.go", true, shouldPrintLog)
 		ReNameFileToGo(path, "smartunit.txt", ".go", true, shouldPrintLog)
-
-		// if strings.Contains(path, "_ATG_test.txt") {
-		// 	err := os.Rename(path, strings.ReplaceAll(path, "_ATG_test.txt", "_smart_unit_test.go"))
-		// 	if err != nil {
-		// 		fmt.Println(err)
-		// 	}
-		// 	return nil
-		// }
 		return nil
 	})
 	if err != nil {
@@ -423,7 +413,7 @@ func CheckEmptyFileAndThenRemove(filePath string, shouldPrintLog bool) error {
 	if err != nil && shouldPrintLog {
 		fmt.Println(err)
 	}
-	b, err := ioutil.ReadAll(file)
+	b, _ := ioutil.ReadAll(file)
 	if strings.Count(string(b), "\n") <= 2 {
 		os.Remove(path.Join(fileDir, fmt.Sprint(fileName, "_ATG_test.txt")))
 		// TODO(siwei.wang) add disable error here
@@ -496,10 +486,8 @@ func RunSplitFunction(done func(), option atgconstant.Options) {
 	var err error
 	var panicInfo string
 	go func() {
-		select {
-		case <-time.After(time.Second * atgconstant.WithoutGATimeOut):
-			done()
-		}
+		<-time.After(time.Second * atgconstant.WithoutGATimeOut)
+		done()
 		defer func() {
 			if err := recover(); err != nil {
 				done()
