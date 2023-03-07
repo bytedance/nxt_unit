@@ -11,14 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var baseDir string
+
+func TestMain(m *testing.M) {
+	_, baseDir, _, _ = runtime.Caller(0)
+	m.Run()
+}
+
 // This case will find two functions of consume
 func TestGetFunctions3(t *testing.T) {
-	_, filePath, _, ok := runtime.Caller(0)
-	if !ok {
-		assert.Equal(t, ok, true)
-		return
-	}
-	filePath = path.Join(path.Dir(filePath), "../../atg/template/receiver.go")
+	filePath := path.Join(path.Dir(baseDir), "../../atg/template/receiver.go")
 	opt := atgconstant.Options{
 		FilePath:     filePath,
 		MinUnit:      "function",
@@ -32,12 +34,7 @@ func TestGetFunctions3(t *testing.T) {
 }
 
 func TestGetFunctions4(t *testing.T) {
-	_, filePath, _, ok := runtime.Caller(0)
-	if !ok {
-		assert.Equal(t, ok, true)
-		return
-	}
-	filePath = path.Join(path.Dir(filePath), "../../atg/template/receiver.go")
+	filePath := path.Join(path.Dir(baseDir), "../../atg/template/receiver.go")
 	opt := atgconstant.Options{
 		FilePath:     filePath,
 		MinUnit:      "function",
@@ -51,12 +48,7 @@ func TestGetFunctions4(t *testing.T) {
 }
 
 func TestGetReferences(t *testing.T) {
-	_, filePath, _, ok := runtime.Caller(0)
-	if !ok {
-		assert.Equal(t, ok, true)
-		return
-	}
-	filePath = path.Join(path.Dir(filePath), "../../atg/template/dataanalysis.go")
+	filePath := path.Join(path.Dir(baseDir), "../../atg/template/dataanalysis.go")
 	opt := atgconstant.Options{
 		FilePath:  filePath,
 		MinUnit:   "function",
@@ -75,12 +67,7 @@ func TestGetReferences(t *testing.T) {
 }
 
 func TestGetReferencesPointer(t *testing.T) {
-	_, filePath, _, ok := runtime.Caller(0)
-	if !ok {
-		assert.Equal(t, ok, true)
-		return
-	}
-	filePath = path.Join(path.Dir(filePath), "../../atg/template/dataanalysis.go")
+	filePath := path.Join(path.Dir(baseDir), "../../atg/template/dataanalysis.go")
 	opt := atgconstant.Options{
 		FilePath:  filePath,
 		MinUnit:   "function",
