@@ -1,20 +1,5 @@
-codecov:
-  require_ci_to_pass: true
-comment:
-  behavior: default
-  layout: reach,diff,flags,tree,reach
-  show_carryforward_flags: false
 coverage:
-  precision: 2
   range: "40...70"
   round: nearest
-  status:
-    changes: false
-    default_rules:
-      flag_coverage_not_uploaded_behavior: include
-    patch: true
-    project: true
-github_checks:
-  annotations: true
 ignore:
-- ^atg/.*
+- atg/
