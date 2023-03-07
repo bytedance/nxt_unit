@@ -1,2 +1,5 @@
+coverage:
+  range: "40...70"
+  round: nearest
 ignore:
-  - "atg"  
+- atg/

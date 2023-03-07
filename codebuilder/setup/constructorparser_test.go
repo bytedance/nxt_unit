@@ -13,13 +13,13 @@ import (
 )
 
 func TestGetAllConstructor(t *testing.T) {
-	fileDir := path.Dir("../../atg/template/constructors/constructors.go")
+	fileDir := path.Join(baseDir, "../../../atg/template/constructors/constructors.go")
 	cfg := &packages.Config{Mode: packages.LoadSyntax}
 	cfg.Tests = false
 
 	initial, err := packages.Load(cfg, fileDir)
 	if err != nil {
-		fmt.Println(err.Error())
+		t.Fatal(err)
 		return
 	}
 	type args struct {
@@ -40,19 +40,21 @@ func TestGetAllConstructor(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotConstructorMap := GetConstructors(tt.args.pkg)
-			fmt.Println(gotConstructorMap)
+			if len(gotConstructorMap) != 2 {
+				t.Errorf("want len 2, got len %v", len(gotConstructorMap))
+			}
 		})
 	}
 }
 
 func TestGetConstructorsByFunc(t *testing.T) {
-	fileDir := path.Dir("../../atg/template/constructer_callers.go")
+	fileDir := path.Join(baseDir, "../../../atg/template/constructer_callers.go")
 	cfg := &packages.Config{Mode: packages.LoadSyntax}
 	cfg.Tests = false
 
 	initial, err := packages.Load(cfg, fileDir)
 	if err != nil {
-		fmt.Println(err.Error())
+		t.Fatal(err)
 		return
 	}
 	prog, _ := ssautil.AllPackages(initial, 0)
