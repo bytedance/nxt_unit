@@ -326,7 +326,6 @@ func GetValue(t reflect.Type, level int) (reflect.Value, error) {
 			ft := time.Now().Add(time.Duration(rand.Int63()))
 			return reflect.ValueOf(ft), nil
 		default:
-			originalDataVal := reflect.New(t)
 			v := reflect.New(t).Elem()
 			if v.NumField() >= 10 {
 				return reflect.Value{}, fmt.Errorf("too many struct field")
@@ -345,9 +344,8 @@ func GetValue(t reflect.Type, level int) (reflect.Value, error) {
 					val = val.Convert(v.Field(i).Type())
 					v.Field(i).Set(val)
 				case tags.fieldType == SKIP:
-					item := originalDataVal.Field(i).Interface()
-					if v.CanSet() && item != nil {
-						v.Field(i).Set(reflect.ValueOf(item))
+					if v.Field(i).CanSet() {
+						v.Field(i).Set(reflect.Zero(v.Field(i).Type()))
 					}
 				default:
 					err := setDataWithTag(v.Field(i).Addr(), tags.fieldType)
@@ -450,6 +448,14 @@ func GetValue(t reflect.Type, level int) (reflect.Value, error) {
 			v.SetMapIndex(key, val)
 		}
 		return v, nil
+	case reflect.Interface:
+		// Only for error
+		tmpErr := (*error)(nil)
+		errType := reflect.TypeOf(tmpErr).Elem()
+		if t.Implements(errType) {
+			return reflect.Zero(errType), nil
+		}
+		fallthrough
 	default:
 		err := fmt.Errorf("no support for kind %+v", t)
 		return reflect.Value{}, err
