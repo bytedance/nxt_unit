@@ -4,7 +4,6 @@ go 1.17
 
 require (
 	github.com/agiledragon/gomonkey/v2 v2.9.0
-	github.com/bxcodec/faker/v3 v3.8.1
 	github.com/google/uuid v1.3.0
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/stretchr/testify v1.8.2
