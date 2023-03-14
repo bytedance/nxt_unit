@@ -3,6 +3,7 @@
 You can compile it as the binary package and run it.
 
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue)](https://github.com/bytedance/nxt_unit/blob/master/LICENSE)
+[![Go](https://github.com/bytedance/nxt_unit/actions/workflows/go.yml/badge.svg)](https://github.com/bytedance/nxt_unit/actions/workflows/go.yml)
 [![codecov](https://codecov.io/gh/bytedance/nxt_unit/branch/main/graph/badge.svg)](https://codecov.io/gh/bytedance/nxt_unit)
 ## Table of Contents
 

@@ -7,16 +7,16 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/bytedance/nxt_unit/atghelper/testase/user_security"
-
 	"github.com/bytedance/nxt_unit/atgconstant"
 	"github.com/stretchr/testify/assert"
 )
 
 type ErrorTest struct {
-	A error
-	b string
-	C *types.Var
+	A    error
+	B    string
+	C    *types.Var
+	Skip string `faker:"-"`
+	Mail string `faker:"email"`
 }
 
 func TestGetValue1(t *testing.T) {
@@ -24,6 +24,13 @@ func TestGetValue1(t *testing.T) {
 	v, err := GetValue(reflect.TypeOf(a), 0)
 	fmt.Println(v)
 	assert.NotNil(t, err)
+}
+
+func TestGetValue2(t *testing.T) {
+	var a *atgconstant.ExecutionValues
+	v, err := GetValue(reflect.TypeOf(a), 0)
+	fmt.Println(v)
+	assert.Nil(t, err)
 }
 
 func TestGetValue3(t *testing.T) {
@@ -63,7 +70,7 @@ func TestGetValue7(t *testing.T) {
 }
 
 func TestGetValue8(t *testing.T) {
-	var a *ErrorTest
+	var a ErrorTest
 	v, err := GetValue(reflect.TypeOf(a), 1)
 	fmt.Println(v)
 	assert.Nil(t, err)
@@ -89,9 +96,51 @@ func TestGetValue11(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestGetValue12(t *testing.T) {
-	var a *user_security.Hello
-	v, err := GetValue(reflect.TypeOf(a), 0)
-	fmt.Println(v)
-	assert.Nil(t, err)
+func Test_isZero(t *testing.T) {
+	type args struct {
+		field reflect.Value
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		{
+			"map",
+			args{
+				field: reflect.ValueOf(make(map[string]string)),
+			},
+			true,
+			false,
+		},
+		{
+			"int",
+			args{
+				field: reflect.ValueOf(0),
+			},
+			true,
+			false,
+		},
+		{
+			"error_struct",
+			args{
+				field: reflect.ValueOf(make([]int64, 0)),
+			},
+			false,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := isZero(tt.args.field)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("isZero() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("isZero() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

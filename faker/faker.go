@@ -414,7 +414,6 @@ func GetValue(t reflect.Type, level int) (reflect.Value, error) {
 			ft := time.Now().Add(time.Duration(rand.Int63()))
 			return reflect.ValueOf(ft), nil
 		default:
-			originalDataVal := reflect.New(t)
 			v := reflect.New(t).Elem()
 			if v.NumField() >= 10 {
 				return reflect.Value{}, fmt.Errorf("too many struct field")
@@ -436,14 +435,21 @@ func GetValue(t reflect.Type, level int) (reflect.Value, error) {
 						if strings.Contains(fieldName, tName) {
 							fake, err := tagFunc(v)
 							if err == nil {
-								SafeSet(v, i, level, found, fake)
+								SafeSet(v, i, level, &found, fake)
 							}
 						}
 					}
+					if !found {
+						val, err := GetValue(v.Field(i).Type(), level)
+						if err != nil {
+							return reflect.Value{}, fmt.Errorf("[GetValue] has GetValue on v.Field(i).Type() err: %v", err)
+						}
+						val = val.Convert(v.Field(i).Type())
+						v.Field(i).Set(val)
+					}
 				case tags.fieldType == SKIP:
-					item := originalDataVal.Field(i).Interface()
-					if v.CanSet() && item != nil {
-						v.Field(i).Set(reflect.ValueOf(item))
+					if v.Field(i).CanSet() {
+						v.Field(i).Set(reflect.Zero(v.Field(i).Type()))
 					}
 				default:
 					if v.Field(i).CanAddr() {
@@ -550,6 +556,14 @@ func GetValue(t reflect.Type, level int) (reflect.Value, error) {
 			v.SetMapIndex(key, val)
 		}
 		return v, nil
+	case reflect.Interface:
+		// Only for error
+		tmpErr := (*error)(nil)
+		errType := reflect.TypeOf(tmpErr).Elem()
+		if t.Implements(errType) {
+			return reflect.Zero(errType), nil
+		}
+		fallthrough
 	default:
 		err := fmt.Errorf("no support for kind %+v", t)
 		return reflect.Value{}, err
@@ -1117,7 +1131,7 @@ func IsExportByName(name string) bool {
 	return unicode.IsUpper(ch)
 }
 
-func SafeSet(v reflect.Value, i int, level int, found bool, fake interface{}) {
+func SafeSet(v reflect.Value, i int, level int, found *bool, fake interface{}) {
 	defer func() {
 		if err := recover(); err != nil {
 			val, err := GetValue(v.Field(i).Type(), level)
@@ -1127,7 +1141,7 @@ func SafeSet(v reflect.Value, i int, level int, found bool, fake interface{}) {
 			val = val.Convert(v.Field(i).Type())
 			v.Field(i).Set(val)
 		} else {
-			found = true
+			*found = true
 		}
 	}()
 	v.Field(i).Set(reflect.ValueOf(fake))
