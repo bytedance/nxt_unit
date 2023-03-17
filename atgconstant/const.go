@@ -195,7 +195,6 @@ var GOROOT string
 var GoDirective string
 var IgnoredPath map[string]string
 var ProjectPath = "/github.com/bytedance/nxt_unit"
-var ProjectPrefix = "github.com"
 var PkgRelativePath string
 var TempImportInfo ImportInfo
 var FinalSuiteTestName string
