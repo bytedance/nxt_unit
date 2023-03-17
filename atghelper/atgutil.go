@@ -20,7 +20,6 @@ import (
 	"go/parser"
 	"go/token"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"os"
 	"path"
@@ -42,37 +41,11 @@ func Contains(slice []string, item string) bool {
 	for _, s := range slice {
 		set[s] = struct{}{}
 	}
-
 	_, ok := set[item]
 	return ok
 }
 
-func substr(s string, pos, length int) string {
-	runes := []rune(s)
-	l := pos + length
-	if l > len(runes) {
-		l = len(runes)
-	}
-	return string(runes[pos:l])
-}
-
-func GetParentDirectory(dirctory string) string {
-	return substr(dirctory, 0, strings.LastIndex(dirctory, "/"))
-}
-
-func GetCurrentProjectRootPath() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		err = fmt.Errorf("[GetCurrentProjectRootPath] has Getwd err: %v", err)
-		log.Fatal(err)
-	}
-	return GetParentDirectory(strings.Replace(dir, "\\", "/", -1))
-}
-
 func GetRepoByRelativePath(relativePath string) string {
-	if !strings.HasPrefix(relativePath, atgconstant.ProjectPrefix) {
-		return ""
-	}
 	results := strings.Split(relativePath, "/")
 	if len(results) >= 3 {
 		return strings.Join(results[0:3], "/")
@@ -120,13 +93,6 @@ func RandStringBytes(n int) string {
 		b[i] = atgconstant.Letters[rand.Intn(len(atgconstant.Letters))]
 	}
 	return string(b)
-}
-
-func RemoveLastFilePath(s string) string {
-	news := DeepCopy(s)
-	sArray := strings.Split(news, "/")
-	sArray = sArray[:len(sArray)-1]
-	return strings.Join(sArray, "/")
 }
 
 func DeepCopySlice(bytes []byte) []byte {

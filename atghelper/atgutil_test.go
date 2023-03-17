@@ -1,7 +1,9 @@
 package atghelper
 
 import (
+	"path"
 	"reflect"
+	"runtime"
 	"testing"
 
 	"gotest.tools/assert"
@@ -40,22 +42,13 @@ func TestUpperCaseFirstLetter2(t *testing.T) {
 	assert.Equal(t, a, "sdwa")
 }
 
-var cCode = []byte(`
-/*
- * I am C style comments
- */
-func init() {
-  fmt.Println("test");
-}
-`)
-
 var commentCode = []byte(`
 // Hello world
 func CommentTest2(a int, b int) (*CommentTry, string) {
 	if a == 0 {
 		return nil, ""
 	}
-	fmt.Println("htt://www.tiktok.com")
+	fmt.Println("http://www.bytedance.com")
 	fmt.Println("\\'//abcse")
 	fmt.Println("//")
 	fmt.Println("// single-line comments")
@@ -72,7 +65,7 @@ func CommentTest2(a int, b int) (*CommentTry, string) {
 	if a == 0 {
 		return nil, ""
 	}
-	fmt.Println("htt://www.tiktok.com")
+	fmt.Println("http://www.bytedance.com")
 	fmt.Println("\\'//abcse")
 	fmt.Println("//")
 	fmt.Println("// single-line comments")
@@ -194,6 +187,151 @@ func TestReplacePkgNameForMap(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, ReplacePkgNameForMap(tt.args.s, tt.args.pkgName, tt.args.originalPkgName, tt.args.fromLeft), "ReplacePkgNameForMap(%v, %v, %v, %v)", tt.args.s, tt.args.pkgName, tt.args.originalPkgName, tt.args.fromLeft)
+		})
+	}
+}
+
+func TestIsFileExist(t *testing.T) {
+
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"case1", args{"/not/exist"}, false},
+		{"case2", args{"./"}, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsFileExist(tt.args.path); got != tt.want {
+				t.Errorf("IsFileExist() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestContains(t *testing.T) {
+	type args struct {
+		slice []string
+		item  string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"case1", args{GoKeywords, "interface"}, true},
+		{"case2", args{GoKeywords, "notexist"}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Contains(tt.args.slice, tt.args.item); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetRepoByRelativePath(t *testing.T) {
+	type args struct {
+		relativePath string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"case1", args{"github.com/myuser/myrepo/mypackage"}, "github.com/myuser/myrepo"},
+		{"case2", args{"strings"}, "strings"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetRepoByRelativePath(tt.args.relativePath); got != tt.want {
+				t.Errorf("GetRepoByRelativePath() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRemoveDirectory(t *testing.T) {
+	type args struct {
+		dirName string
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{"case1", args{"not/exist"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			RemoveDirectory(tt.args.dirName)
+		})
+	}
+}
+
+func TestRandStringBytes(t *testing.T) {
+	type args struct {
+		n int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"test", args{10}, 10},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := RandStringBytes(tt.args.n); len(got) != tt.want {
+				t.Errorf("RandStringBytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRemoveCStyleComments(t *testing.T) {
+	type args struct {
+		content []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{"test1", args{[]byte("/*comment*/\nfunc Add(){}")}, []byte("\nfunc Add(){}")},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := RemoveCStyleComments(tt.args.content); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("RemoveCStyleComments() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRemoveGoComments(t *testing.T) {
+	_, filePath, _, _ := runtime.Caller(0)
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{"test1", args{path.Join(filePath, "../../atg/template/atgv2.go")}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := RemoveGoComments(tt.args.path)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("RemoveGoComments() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
 		})
 	}
 }

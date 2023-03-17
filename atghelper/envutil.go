@@ -23,7 +23,6 @@ import (
 	"os/exec"
 
 	"github.com/bytedance/nxt_unit/atgconstant"
-	mateAtgconstant "github.com/bytedance/nxt_unit/atgconstant"
 )
 
 type GoVersionInfo struct {
@@ -74,5 +73,5 @@ func GetGoVersion(path string) (GoVersionInfo, error) {
 }
 
 func GetUseMockByVersion(path string) int {
-	return mateAtgconstant.UseMockitoMock
+	return atgconstant.UseMockitoMock
 }
