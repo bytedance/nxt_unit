@@ -14,8 +14,8 @@ func TestGetConvertedImportsFromSrc(t *testing.T) {
 		assert.Equal(t, ok, true)
 		return
 	}
-	filePath = path.Join(path.Dir(filePath), "../../atghelper/atgutil_test.go")
+	filePath = path.Join(path.Dir(filePath), "../../atg/template/atg.go")
 	convertedImports, err := GetImportsInfosFromFile(filePath)
 	assert.Nil(t, err)
-	assert.Equal(t, len(convertedImports), 3)
+	assert.Equal(t, len(convertedImports), 4)
 }
