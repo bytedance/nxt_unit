@@ -48,6 +48,7 @@ func CommentTest2(a int, b int) (*CommentTry, string) {
 	if a == 0 {
 		return nil, ""
 	}
+	fmt.Println("http://www.bytedance.com")
 	fmt.Println("\\'//abcse")
 	fmt.Println("//")
 	fmt.Println("// single-line comments")
@@ -64,7 +65,7 @@ func CommentTest2(a int, b int) (*CommentTry, string) {
 	if a == 0 {
 		return nil, ""
 	}
-	fmt.Println("htt://www.tiktok.com")
+	fmt.Println("http://www.bytedance.com")
 	fmt.Println("\\'//abcse")
 	fmt.Println("//")
 	fmt.Println("// single-line comments")
