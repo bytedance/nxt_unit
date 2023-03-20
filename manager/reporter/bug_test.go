@@ -20,7 +20,10 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"sync"
 	"testing"
+
+	"github.com/bytedance/nxt_unit/atgconstant"
 )
 
 func TestBugReporter_Analysis(t *testing.T) {
@@ -65,12 +68,95 @@ var s = `# github/fakerinf/nxt_unit/atg/errinfo [github/fakerinf/nxt_unit/atg/er
 ./deadlock.go:52:6: ddddda redeclared in this block
 	previous declaration at ./deadlock.go:48:6`
 
-var testInfo = `# github/fakerinf/nxt_unit/atg/errinfo [github.com/bytedance/nxt_unit/atg/errinfo.test]
-./atg_test.go:18:6: syntax error: unexpected newline, expecting type
-./atg_test.go:52:6: ddddda redeclared in this block
-	previous declaration at ./deadlock.go:48:6`
-
 var ciInfo = `# /go/src/github/fakerinf/nxt_unit/atg/errinfo [/go/src/github/fakerinf/nxt_unit/atg/errinfo.test]
 ./atg_test.go:18:6: syntax error: unexpected newline, expecting type
 ./atg_test.go:52:6: ddddda redeclared in this block
 	previous declaration at ./deadlock.go:48:6`
+
+func Test_bugReporter_Report(t *testing.T) {
+	type fields struct {
+		mode   string
+		bugs   []bugInfo
+		panics []bugInfo
+	}
+	type args struct {
+		option atgconstant.Options
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   string
+	}{
+		{
+			"case1",
+			fields{
+				Issue,
+				[]bugInfo{
+					{
+						"1", "bug", "bug detail", "bugFunc", "warning", "/go/src/example.com/test/code/bug.go", "bug.go", ""},
+				},
+				[]bugInfo{
+					{
+						"1", "panic", "panic detail", "panicFunc", "error", "/go/src/example.com/test/code/panic.go", "panic.go", "",
+					},
+				},
+			},
+			args{
+				atgconstant.Options{FilePath: "/go/src/example.com/test/code/panic.go", FuncName: "func"},
+			},
+			"::add-issue rule=errcheck,severity=warning,kind=bug,path=bug.go,line=1:: targetFunc-func || message-bug \n\n::add-message level=error:: targetFunc-func || panic **/go/src/example.com/test/code/panic.go** || panic info:  **panic** || stack: ```panic detail```  \n",
+		},
+		{
+			"case2",
+			fields{
+				Message,
+				[]bugInfo{
+					{
+						"1", "bug", "bug detail", "bugFunc", "warning", "/go/src/example.com/test/code/bug.go", "bug.go", ""},
+				},
+				[]bugInfo{
+					{
+						"1", "panic", "panic detail", "panicFunc", "error", "/go/src/example.com/test/code/panic.go", "panic.go", "",
+					},
+				},
+			},
+			args{
+				atgconstant.Options{FilePath: "/go/src/example.com/test/code/panic.go", FuncName: "func"},
+			},
+			"::add-message level=error:: targetFunc-func || panic **/go/src/example.com/test/code/panic.go** || panic info:  **panic** || stack: ```panic detail```  \n",
+		},
+		{
+			"case3",
+			fields{
+				Markdown,
+				[]bugInfo{
+					{
+						"1", "bug", "bug detail", "bugFunc", "warning", "/go/src/example.com/test/code/bug.go", "bug.go", ""},
+				},
+				[]bugInfo{
+					{
+						"1", "panic", "panic detail", "panicFunc", "error", "/go/src/example.com/test/code/panic.go", "panic.go", "",
+					},
+				},
+			},
+			args{
+				atgconstant.Options{FilePath: "/go/src/example.com/test/code/panic.go", FuncName: "func"},
+			},
+			"\n## example.com/test/code/panic.go:func bug report\n \n### /go/src/example.com/test/code/panic.go Panic\n\n- Panic Message : panic\n\n- Stack:\n\n \n ``` \n panic detail \n ``` \n \n\n\n",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &bugReporter{
+				RWMutex: sync.RWMutex{},
+				mode:    tt.fields.mode,
+				bugs:    tt.fields.bugs,
+				panics:  tt.fields.panics,
+			}
+			if got := b.Report(tt.args.option); got != tt.want {
+				t.Errorf("bugReporter.Report() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
