@@ -181,13 +181,9 @@ func (b *bugReporter) GeneratePanicInfo() string {
 	return string(issue_byte)
 }
 
-func message(b bugInfo) string {
-	return fmt.Sprintf("**%s**:**%s**: %s", b.filePath, b.line, b.message)
-}
-
 func markDown(b bugInfo) string {
 	b.detail = strings.ReplaceAll(b.detail, "\n", "   ||  ")
-	return fmt.Sprintf("panic **%s** ｜｜ panic info:  **%s** ｜｜ stack: ```%s``` ", b.filePath, b.message, b.detail)
+	return fmt.Sprintf("panic **%s** || panic info:  **%s** || stack: ```%s``` ", b.filePath, b.message, b.detail)
 }
 
 func markdownPanic(b bugInfo) string {
@@ -204,25 +200,11 @@ func markdownPanic(b bugInfo) string {
 	return fmt.Sprintf(panicInfo, b.filePath, b.message, " \n ``` \n "+b.detail+" \n ``` \n ")
 }
 
-func markdownCompileErr(funcName string, b bugInfo) string {
-	filePath := b.filePath
-	filePath = strings.ReplaceAll(filePath, "/go/src/", "")
-	var errInfo = `
-### %s ERR 
-
- - ERROR MESSAGE : %s
-
- - Code: %s:%s
-
-`
-	return fmt.Sprintf(errInfo, funcName, b.message, filePath, b.line)
-}
-
 func (b *bugReporter) trimBugs() {
 	var left []bugInfo
 	errMap := map[string]bool{}
 	for _, bug := range b.bugs {
-		ok, _ := errMap[bug.filePath+bug.line]
+		ok := errMap[bug.filePath+bug.line]
 		if ok {
 			continue
 		}
