@@ -10,7 +10,7 @@ You can compile it as the binary package and run it.
 - [Introduction](#Introduction)
 - [How To Use](#How-To-Use)
 - [Generation Failure](#Generation-Failure)
-- [License](#License)
+- [Documentations](#Documentations)
 
 ## Introduction
 
@@ -322,7 +322,27 @@ cp `go env GOPATH`/macos-golink-wrapper/link  `go env GOTOOLDIR`/link
 chmod +x `go env GOTOOLDIR`/link
 ```
 
-
-## License
+## Doumentations
+### License
 
 `NxtUnit` is licensed under the terms of the Apache license 2.0. See [LICENSE](LICENSE) for more information.
+
+### Citation
+```
+@inproceedings{10.1145/3593434.3593443,
+    author = {Wang, Siwei and Mao, Xue and Cao, Ziguang and Gao, Yujun and Shen, Qucheng and Peng, Chao},
+    title = {NxtUnit: Automated Unit Test Generation for Go},
+    year = {2023},
+    isbn = {9798400700446},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3593434.3593443},
+    doi = {10.1145/3593434.3593443},
+    booktitle = {Proceedings of the 27th International Conference on Evaluation and Assessment in Software Engineering},
+    pages = {176–179},
+    numpages = {4},
+    keywords = {Go, Automated Test Generation},
+    location = {Oulu, Finland},
+    series = {EASE '23}
+}
+```
