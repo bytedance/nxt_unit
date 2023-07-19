@@ -284,7 +284,7 @@ func GetRandValueByType(typeValue string, isStars ...bool) string {
 		}
 		return fmt.Sprintf("%+v", rand.Float64())
 	case "error":
-		return fmt.Sprintf("nil")
+		return "nil"
 	}
 
 	return "nil"

@@ -435,7 +435,7 @@ func (c *CoverFile) offset(pos token.Pos) int {
 }
 
 func (c *CoverFile) startCoverageTrace(funcName, fileName, isStart, receiverName string) string {
-	branchVectorV := fmt.Sprint("branchVector")
+	branchVectorV := "branchVector"
 	rV := fmt.Sprint("r", c.Uid)
 	coverInfoV := fmt.Sprint("CoverInfoSU", c.Uid)
 	coverInfoVStatment := fmt.Sprintf("CoverInfoSU%s{FunctionName: \"%s\", Uid: \"%s\",IsStart: \"%s\",ReceiverName: \"%s\"}", c.Uid, funcName, c.Uid, isStart, receiverName)
@@ -448,7 +448,7 @@ func (c *CoverFile) startCoverageTrace(funcName, fileName, isStart, receiverName
 }
 
 func (c *CoverFile) startInitCoverageTrace() string {
-	branchVectorV := fmt.Sprint("branchVector")
+	branchVectorV := "branchVector"
 	return fmt.Sprint(branchVectorV, " := map[string]int{};hitCommit := []func(){};fmt.Sprint(hitCommit,branchVector);")
 }
 
@@ -459,7 +459,7 @@ func (c *CoverFile) coverageTrace(name string) string {
 	} else {
 		name = id.String()
 	}
-	branchVectorV := fmt.Sprint("branchVector")
+	branchVectorV := "branchVector"
 	builder := util.NewStringBuilder()
 	builder.Append("if _,ok :=")
 	builder.Append(branchVectorV)
