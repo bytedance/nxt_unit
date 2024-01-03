@@ -395,7 +395,7 @@ func GetValue(t reflect.Type, level int) (reflect.Value, error) {
 		v := reflect.New(t.Elem())
 		var val reflect.Value
 		var err error
-		if a != reflect.Zero(t).Interface() {
+		if a.Interface() != reflect.Zero(t).Interface() {
 			val, err = GetValue(t.Elem(), level+1)
 			if err != nil {
 				return reflect.Value{}, fmt.Errorf("[GetValue] has GetValue on t.Elem() err: %v", err)
