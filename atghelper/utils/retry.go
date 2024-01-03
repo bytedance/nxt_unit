@@ -43,6 +43,7 @@ func RetryDo(name string, times int, timeout time.Duration, run runAbortFunc, ar
 	abort := false
 	resultCh := make(chan error, 1)
 	panicSignal := make(chan string)
+	quit := make(chan bool)
 
 	go func() {
 		var runErr error
@@ -52,7 +53,11 @@ func RetryDo(name string, times int, timeout time.Duration, run runAbortFunc, ar
 				return
 			}
 			runErr = errors.New(fmt.Sprint(panicInfo))
-			panicSignal <- fmt.Sprintf("[DoCanAbort-Recovery] name %s,err=%v smartunit_debug.Stack:\n%s", name, runErr, debug.Stack())
+			select {
+			//	received quit signal from the timeout
+			case <-quit:
+			case panicSignal <- fmt.Sprintf("[DoCanAbort-Recovery] name %s,err=%v smartunit_debug.Stack:\n%s", name, runErr, debug.Stack()):
+			}
 		}()
 		for i := 0; i < times; i++ {
 			if atomic.LoadInt32(&timeoutAbort) > 0 {
@@ -82,9 +87,11 @@ func RetryDo(name string, times int, timeout time.Duration, run runAbortFunc, ar
 		// a read from ch has occurred
 	case panicInfo := <-panicSignal:
 		// panic!!!
+		close(quit)
 		panic(panicInfo)
 	case <-timer.C:
 		// the read from ch has timed out
+		quit <- true
 		err = TimeoutErr
 		atomic.StoreInt32(&timeoutAbort, 1)
 	}
