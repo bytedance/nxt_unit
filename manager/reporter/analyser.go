@@ -130,7 +130,7 @@ func (p *panicErr) Analysis(ctx context.Context, contents, filePath, mirrorFileN
 	return
 }
 func getPackRelativePath(filePath string) string {
-	reg, err := regexp.Compile(`github.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/(.*)`)
+	reg, err := regexp.Compile(`github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/(.*)`)
 	if err != nil {
 		fmt.Println(err)
 	}
